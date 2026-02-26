@@ -3,14 +3,13 @@ import {
   ApplicationRef,
   Component,
   inject,
-  OnDestroy,
-  OnInit, output,
-  PendingTasks,
+  OnInit,
+  output,
   PLATFORM_ID,
   signal
 } from '@angular/core';
-import {SkipEventReplayDirective} from '../skip-event-replay.directive';
 import {isPlatformBrowser} from '@angular/common';
+import {EventReplayDedupeService} from '../event-replay-dedupe/event-replay-dedupe.service';
 
 interface ClickEntry {
   index: number;
@@ -21,11 +20,12 @@ interface ClickEntry {
 @Component({
   selector: 'hydrated',
   templateUrl: './hydrated.component.html',
-  styleUrl: './hydrated.component.css',
+  styleUrl: './hydrated.component.css'
 })
 export class HydratedComponent implements OnInit {
-  private platformId = inject(PLATFORM_ID);
-  private appRef = inject(ApplicationRef);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly appRef = inject(ApplicationRef);
+  private readonly eventReplayDedupeService = inject(EventReplayDedupeService);
 
   readonly isStable = signal(false);
   readonly totalClicks = signal(0);
@@ -56,7 +56,9 @@ export class HydratedComponent implements OnInit {
   }
 
   onButtonClick(event: PointerEvent): void {
-    console.log(event);
+    if (this.eventReplayDedupeService.isDuplicate(event)) {
+      return;
+    }
 
     this.totalClicks.update((n) => n + 1);
 
