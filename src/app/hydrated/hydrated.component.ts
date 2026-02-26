@@ -34,7 +34,7 @@ export class HydratedComponent implements OnInit {
 
   readonly isHydrated = output<boolean>();
 
-  private receivedClickTimestamps = new Set<number>();
+  private handledEvents = new WeakSet<Event>();
   private hydratedTime = 0;
 
   constructor() {
@@ -64,11 +64,11 @@ export class HydratedComponent implements OnInit {
     // that will be queued for replay. A click that fires once the app is stable
     // drains that queue — the first such click per pending entry is the replay.
     let isDuplicate = false;
-    if (this.receivedClickTimestamps.has(event.timeStamp)) {
+    if (this.handledEvents.has(event)) {
       isDuplicate = true;
       this.doubleFires.update((n) => n + 1);
     } else if (!this.isStable()) {
-      this.receivedClickTimestamps.add(event.timeStamp);
+      this.handledEvents.add(event);
     }
 
     const time = new Date().toLocaleTimeString('en', {
