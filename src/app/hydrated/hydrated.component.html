@@ -1,0 +1,43 @@
+<!-- Click button -->
+<button (click)="onButtonClick($event)" class="click-btn">Click Me</button>
+
+<!-- Counter -->
+<div class="counter">
+  <div class="counter-value" [class.bug-detected]="doubleFires() > 0">{{ totalClicks() }}</div>
+  <div class="counter-label">total click events fired</div>
+</div>
+
+<!-- Bug banner -->
+@if (doubleFires() > 0) {
+  <div class="bug-banner">
+    {{ doubleFires() }} click(s) were double-fired due to event replay.
+  </div>
+}
+
+<!-- Click log -->
+@if (clickLog().length > 0) {
+  <div class="log-section">
+    <h3>Event Log (newest first)</h3>
+    <ul class="log-list">
+      @for (entry of clickLog(); track entry.index) {
+        <li class="log-entry" [class.replay]="entry.status === 'bad-replay'" [class.normal]="!(entry.status === 'bad-replay')">
+          <span class="log-index">#{{ entry.index }}</span>
+          <span class="log-time">{{ entry.time }}</span>
+          <span class="log-tag">
+            @switch (entry.status) {
+              @case ('bad-replay') {
+                <span>DUPLICATE (replay of click after hydration)</span>
+              }
+              @case ('good-replay') {
+                <span>replay of click before hydration</span>
+              }
+              @default {
+                <span>not a replay</span>
+              }
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  </div>
+}
