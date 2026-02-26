@@ -10,4 +10,4 @@ npm run build
 npm run serve:ssr
 ```
 
-Then open `http://localhost:4000`, and click the button while the app is still unstable (within the first ~8 seconds). Each click should fire once. If the event log shows a REPLAY entry, the bug is present.
+Then open `http://localhost:4000`, and click the button while the app is still unstable (within the first ~8 seconds). Each click should fire once. If the event log shows a REPLAY entry, the issue is present.
